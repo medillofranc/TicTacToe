@@ -15,6 +15,9 @@ namespace Tictactoe
     {
         private const string PLAYER = "X";
         private const string CPU = "O";
+        private int playerScore = 0;
+        private int cpuScore = 0;
+
         private Button[] buttons;
 
         private int[][] winningCombinations = new int[][]
@@ -175,8 +178,8 @@ namespace Tictactoe
                 //Player Win
                 if (combo.All(i => buttons[i - 1].Text == PLAYER))
                 {
-                    MessageBox.Show("Player Wins!");
-                    ClearGame();
+                    HighlightWinningCombination(combo);
+                    CountWin(PLAYER);
                     return true;
                 }
 
@@ -191,13 +194,46 @@ namespace Tictactoe
 
             if (buttons.All(btn => btn.Text != ""))
             {
-                MessageBox.Show("It's a Draw!");
-                ClearGame();
+                HighlightWinningCombination(combo);
+                CountWin(CPU);
                 return true;
             }
 
 
             return false;
+        }
+
+        private void HighlightWinningCombination(int[] combo)
+        {
+            foreach (var i in combo)
+                buttons[i - 1].BackColor = Color.HotPink;
+
+            Application.DoEvents();
+            Thread.Sleep(2000);
+
+            foreach (var i in combo)
+                buttons[i - 1].BackColor = Color.MediumPurple;
+        }
+
+        private void CountWin(string winner)
+        {
+            if (winner == PLAYER) playerScore++;
+            else if (winner == CPU) cpuScore++;
+            lbl_PlayerScore.Text = playerScore.ToString();
+            lbl_ComputerScore.Text = cpuScore.ToString();
+
+            if (playerScore == 3 || cpuScore == 3)
+            {
+                string message = playerScore == 3 ? "Player Wins the Game!" : "Computer Wins the Game!";
+                MessageBox.Show(message);
+                playerScore = 0;
+                cpuScore = 0;
+                lbl_PlayerScore.Text = playerScore.ToString();
+                lbl_ComputerScore.Text = cpuScore.ToString();
+                Thread.Sleep(1000);
+            }
+
+            ClearGame();
         }
 
 
